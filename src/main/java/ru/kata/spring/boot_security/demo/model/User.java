@@ -102,4 +102,23 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @Override
+    public final boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (!(object instanceof User)) {
+            return false;
+        }
+
+        User other = (User) object;
+        return getId() != null && getId().equals(other.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return User.class.hashCode();
+    }
 }

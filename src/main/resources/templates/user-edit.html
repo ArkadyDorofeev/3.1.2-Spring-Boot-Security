@@ -6,6 +6,7 @@
 </head>
 <body>
 <h1>Редактировать пользователя</h1>
+<p th:if="${error}" th:text="${error}" role="alert"></p>
 
 <form method="post"
       th:action="@{/admin/update}"
@@ -21,6 +22,25 @@
     <label>
         Почта:
         <input type="email" th:field="*{email}" required>
+    </label>
+
+    <label>
+        Новый пароль:
+        <input type="password"
+               name="password"
+               autocomplete="new-password">
+    </label>
+
+    <p>Оставьте пароль пустым, чтобы сохранить прежний.</p>
+
+    <p>Роли:</p>
+
+    <label th:each="role : ${roles}">
+        <input type="checkbox"
+               name="roleIds"
+               th:value="${role.id}"
+               th:checked="${#lists.contains(user.roles.![id], role.id)}">
+        <span th:text="${role.name}"></span>
     </label>
 
     <button type="submit">Сохранить</button>

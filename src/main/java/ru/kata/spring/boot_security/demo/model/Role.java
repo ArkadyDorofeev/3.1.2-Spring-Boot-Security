@@ -42,4 +42,23 @@ public class Role implements GrantedAuthority {
     public String getAuthority() {
         return name;
     }
+
+    @Override
+    public final boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (!(object instanceof Role)) {
+            return false;
+        }
+
+        Role other = (Role) object;
+        return getId() != null && getId().equals(other.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return Role.class.hashCode();
+    }
 }

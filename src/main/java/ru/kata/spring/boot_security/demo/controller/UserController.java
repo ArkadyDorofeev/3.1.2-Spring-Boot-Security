@@ -7,11 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.service.RoleService;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 
@@ -47,26 +44,14 @@ public class UserController {
             @RequestParam(value = "roleIds", required = false) List<Long> roleIds,
             Model model
     ) {
-        if (password.isBlank() || roleIds == null || roleIds.isEmpty()) {
+        try {
+            userService.createUser(name, email, password, roleIds);
+            return "redirect:/admin";
+        } catch (IllegalArgumentException e) {
             model.addAttribute("roles", roleService.findAll());
-            model.addAttribute("error", "Укажите пароль и выберите хотя бы одну роль.");
+            model.addAttribute("error", e.getMessage());
             return "user-create";
         }
-        Set<Role> roles = new HashSet<>();
-        for (Long roleId : roleIds) {
-            Role role = roleService.findById(roleId);
-            if (role == null) {
-                model.addAttribute("roles", roleService.findAll());
-                model.addAttribute("error", "Выбрана несуществующая роль.");
-                return "user-create";
-            }
-            roles.add(role);
-        }
-        User user = new User(name, email);
-        user.setPassword(password);
-        user.setRoles(roles);
-        userService.save(user);
-        return "redirect:/admin";
     }
 
     @GetMapping("/edit")
@@ -80,6 +65,7 @@ public class UserController {
             return "redirect:/admin";
         }
         model.addAttribute("user", user);
+        model.addAttribute("roles", roleService.findAll());
         return "user-edit";
     }
 
@@ -87,16 +73,26 @@ public class UserController {
     public String updateUser(
             @RequestParam("id") Long id,
             @RequestParam("name") String name,
-            @RequestParam("email") String email
+            @RequestParam("email") String email,
+            @RequestParam(value = "password", required = false) String password,
+            @RequestParam(value = "roleIds", required = false) List<Long> roleIds,
+            Model model
     ) {
-        User user = userService.findById(id);
-        if (user == null) {
+        try {
+            userService.updateUser(id, name, email, password, roleIds);
             return "redirect:/admin";
+        } catch (IllegalArgumentException e) {
+            User user = userService.findById(id);
+
+            if (user == null) {
+                return "redirect:/admin";
+            }
+
+            model.addAttribute("user", user);
+            model.addAttribute("roles", roleService.findAll());
+            model.addAttribute("error", e.getMessage());
+            return "user-edit";
         }
-        user.setName(name);
-        user.setEmail(email);
-        userService.update(user);
-        return "redirect:/admin";
     }
 
     @PostMapping("/delete")
