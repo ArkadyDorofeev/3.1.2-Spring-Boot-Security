@@ -64,7 +64,14 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void createUser(String name, String email, String password, List<Long> roleIds) {
+    public void createUser(String name, String lastName, Integer age,
+                           String email, String password, List<Long> roleIds) {
+
+        if (userDao.findByEmail(email) != null) {
+            throw new IllegalArgumentException(
+                    "Пользователь с такой почтой уже существует."
+            );
+        }
         if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("Укажите пароль.");
         }
@@ -85,6 +92,8 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = new User(name, email);
+        user.setLastName(lastName);
+        user.setAge(age);
         user.setPassword(passwordEncoder.encode(password));
         user.setRoles(roles);
 
@@ -93,12 +102,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(Long id, String name, String email,
-                           String password, List<Long> roleIds) {
+    public void updateUser(Long id, String name, String lastName, Integer age,
+                           String email, String password, List<Long> roleIds) {
         User user = userDao.findById(id);
 
         if (user == null) {
             throw new IllegalArgumentException("Пользователь не найден.");
+        }
+        User existingUser = userDao.findByEmail(email);
+
+        if (existingUser != null && !existingUser.getId().equals(id)) {
+            throw new IllegalArgumentException(
+                    "Пользователь с такой почтой уже существует."
+            );
         }
 
         if (roleIds == null || roleIds.isEmpty()) {
@@ -118,6 +134,8 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setName(name);
+        user.setLastName(lastName);
+        user.setAge(age);
         user.setEmail(email);
         user.setRoles(roles);
 

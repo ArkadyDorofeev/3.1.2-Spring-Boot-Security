@@ -2,41 +2,163 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Добавить пользователя</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>New User</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
 </head>
-<body>
-<h1>Добавить пользователя</h1>
-<p th:if="${error}" th:text="${error}" role="alert"></p>
+<body class="bg-light">
+<nav class="navbar navbar-dark bg-dark">
+    <div class="text-white">
+        <strong th:text="${currentUser.email}"></strong>
 
-<form method="post" th:action="@{/admin/add}">
-    <label>
-        Имя:
-        <input type="text" name="name" required>
-    </label>
+        <span> with roles: </span>
 
-    <label>
-        Почта:
-        <input type="email" name="email" required>
-    </label>
+        <span th:each="role : ${currentUser.roles}"
+              th:text="${#strings.replace(role.name, 'ROLE_', '')}"
+              class="mr-1">
+        </span>
+    </div>
 
-    <label>
-        Пароль:
-        <input type="password" name="password" autocomplete="new-password" required>
-    </label>
+    <form method="post" th:action="@{/logout}" class="mb-0">
+        <button type="submit" class="btn btn-link text-white-50">
+            Logout
+        </button>
+    </form>
+</nav>
 
-    <p>Роли (выберите одну или несколько):</p>
-    <label th:each="role : ${roles}">
-        <input type="checkbox" name="roleIds" th:value="${role.id}">
-        <span th:text="${role.name}"></span>
-    </label>
+<div class="container-fluid">
+    <div class="row">
 
-    <button type="submit">Сохранить</button>
-</form>
+        <aside class="col-md-2 bg-white pt-3"
+               style="min-height: calc(100vh - 56px);">
 
-<a th:href="@{/admin}">К списку</a>
+            <div class="nav flex-column nav-pills">
+                <a class="nav-link active" th:href="@{/admin}">
+                    Admin
+                </a>
 
-<form method="post" th:action="@{/logout}">
-    <button type="submit">Выйти</button>
-</form>
+                <a class="nav-link" th:href="@{/user}">
+                    User
+                </a>
+            </div>
+        </aside>
+
+        <main class="col-md-10 p-4">
+            <h1 class="mb-4">Admin panel</h1>
+
+            <ul class="nav nav-tabs mb-3">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin}">
+                        Users table
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/admin/new}">
+                        New User
+                    </a>
+                </li>
+            </ul>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Add new user</h5>
+                </div>
+
+                <div class="card-body">
+                    <div th:if="${error}"
+                         th:text="${error}"
+                         class="alert alert-danger"
+                         role="alert">
+                    </div>
+
+
+                    <form method="post"
+                          th:action="@{/admin/add}"
+                          class="mx-auto text-center"
+                          style="max-width: 330px;">
+
+                        <div class="form-group">
+                            <label for="name" class="font-weight-bold">First Name</label>
+                            <input type="text"
+                                   id="name"
+                                   name="name"
+                                   class="form-control"
+                                   placeholder="First Name"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastName" class="font-weight-bold">
+                                Last Name
+                            </label>
+                            <input type="text"
+                                   id="lastName"
+                                   name="lastName"
+                                   class="form-control"
+                                   placeholder="Last Name"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="age" class="font-weight-bold">
+                                Age
+                            </label>
+                            <input type="number"
+                                   id="age"
+                                   name="age"
+                                   class="form-control"
+                                   placeholder="Age"
+                                   min="0"
+                                   max="150"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="font-weight-bold">Email</label>
+                            <input type="email"
+                                   id="email"
+                                   name="email"
+                                   class="form-control"
+                                   placeholder="Email"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password" class="font-weight-bold">Password</label>
+                            <input type="password"
+                                   id="password"
+                                   name="password"
+                                   class="form-control"
+                                   placeholder="Password"
+                                   autocomplete="new-password"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="roles" class="font-weight-bold">Role</label>
+                            <select id="roles"
+                                    name="roleIds"
+                                    class="form-control"
+                                    multiple
+                                    size="2">
+                                <option th:each="role : ${roles}"
+                                        th:value="${role.id}"
+                                        th:text="${#strings.replace(role.name, 'ROLE_', '')}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">
+                            Add new user
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
 </body>
 </html>

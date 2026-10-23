@@ -16,6 +16,11 @@ public class User implements UserDetails {
 
     private String name;
 
+    private String lastName;
+
+    private Integer age;
+
+    @Column(unique = true)
     private String email;
 
     private String password;
@@ -120,5 +125,21 @@ public class User implements UserDetails {
     @Override
     public final int hashCode() {
         return User.class.hashCode();
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 }
