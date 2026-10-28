@@ -38,9 +38,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/", "/index").hasRole("ADMIN")
-                .antMatchers("/admin", "/admin/**").hasRole("ADMIN")
+                .antMatchers("/admin", "/admin/**", "/api/admin/**").hasRole("ADMIN")
+                .antMatchers("/api/user").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/user").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
+                .and()
+                .exceptionHandling()
+                .defaultAuthenticationEntryPointFor(
+                        (request, response, exception) -> {
+                            response.setStatus(401);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"message\":\"Необходимо войти в систему\"}");
+                        }, new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/api/**"))
+                .accessDeniedHandler((request, response, exception) -> {
+                    if (request.getServletPath().startsWith("/api/")) {
+                        response.setStatus(403);
+                        response.setContentType("application/json;charset=UTF-8");
+                        response.getWriter().write("{\"message\":\"Доступ запрещён или истёк CSRF-токен. Войдите заново.\"}");
+                    } else {
+                        response.sendError(403);
+                    }
+                })
                 .and()
                 .formLogin()
                 .loginPage("/login")

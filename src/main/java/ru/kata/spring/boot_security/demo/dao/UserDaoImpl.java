@@ -17,7 +17,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> findAll() {
-        return entityManager.createQuery("SELECT user FROM User user", User.class). getResultList();
+        return entityManager.createQuery("SELECT DISTINCT user FROM User user LEFT JOIN FETCH user.roles", User.class). getResultList();
     }
 
     @Override
