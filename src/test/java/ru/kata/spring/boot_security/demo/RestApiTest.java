@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.kata.spring.boot_security.demo.configs.MvcConfig;
 import ru.kata.spring.boot_security.demo.configs.SuccessUserHandler;
 import ru.kata.spring.boot_security.demo.configs.WebSecurityConfig;
 import ru.kata.spring.boot_security.demo.controller.*;
@@ -21,9 +22,16 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest({UserRestController.class, RoleRestController.class, ProfileRestController.class,
-        UserController.class, ProfileController.class})
-@Import({WebSecurityConfig.class, SuccessUserHandler.class})
+@WebMvcTest({
+        UserRestController.class,
+        RoleRestController.class,
+        ProfileRestController.class
+})
+@Import({
+        WebSecurityConfig.class,
+        SuccessUserHandler.class,
+        MvcConfig.class
+})
 class RestApiTest {
     @Autowired MockMvc mvc;
     @MockBean UserService users;
